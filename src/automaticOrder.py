@@ -6,6 +6,15 @@ from selenium.webdriver.common.by import By
 import time
 import os
 
+import streamlit as st
+import subprocess
+
+def get_version(cmd):
+    try:
+        return subprocess.check_output([cmd, '--version']).decode('utf-8').strip()
+    except Exception as e:
+        return f"Error: {e}"
+
 def get_chrome_driver():
     chrome_options = Options()
     chrome_options.add_argument("--headless")  # 브라우저 창 안 띄움
@@ -119,6 +128,12 @@ def cancel_order(driver):
 
 
 def order_main():
+
+    st.write('Chromium version:', get_version('chromium-browser'))
+    st.write('Chromedriver version:', get_version('chromedriver'))
+
+    st.write('chromedriver exists:', os.path.exists('/usr/bin/chromedriver'))
+
     svcSeq = '51'
     url = 'http://123.111.139.135:8180/main_ani.jsp?svcSeq=' + svcSeq + '&graphicResolution=2#platformNameId=8&clientType=1&deviceType=1&videoResolution=2&deviceId=LC_PC_TEST&soId=LC_PC&model=NONE&mac=LC_PC_MAC&bridged=false'
     
