@@ -2,10 +2,27 @@ from selenium import webdriver
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 import time
 from datetime import datetime
 import pandas as pd
 import os
+
+def get_chrome_driver():
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # 브라우저 창 안 띄움
+    chrome_options.add_argument("--no-sandbox")  # 샌드박스 끔
+    chrome_options.add_argument("--disable-dev-shm-usage")  # 메모리 문제 방지
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--window-size=1920x1080")
+
+    chrome_options.binary_location = "/usr/bin/chromium-browser"
+
+    return webdriver.Chrome(
+        service=Service("/usr/bin/chromedriver"),
+        options=chrome_options
+    )
 
 
 def get_date(base_year, base_month, base_day, d) -> datetime:
@@ -21,7 +38,8 @@ def crawl_broadcast_info():
     today = datetime.today()
 
     url = 'https://live.ecomm-data.com/schedule/hs'
-    browser = webdriver.Chrome()
+    # browser = webdriver.Chrome()
+    browser = get_chrome_driver()
     browser.get(url)
     
     # 1. 날짜별로 조회.

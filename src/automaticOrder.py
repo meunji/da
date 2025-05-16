@@ -1,10 +1,25 @@
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By 
 import time
 import os
 
+def get_chrome_driver():
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")  # 브라우저 창 안 띄움
+    chrome_options.add_argument("--no-sandbox")  # 샌드박스 끔
+    chrome_options.add_argument("--disable-dev-shm-usage")  # 메모리 문제 방지
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--window-size=1920x1080")
+
+    chrome_options.binary_location = "/usr/bin/chromium-browser"
+
+    return webdriver.Chrome(
+        service=Service("/usr/bin/chromedriver"),
+        options=chrome_options
+    )
 
 def remote_bank_order(driver):
     # 바로주문
@@ -15,8 +30,8 @@ def remote_bank_order(driver):
     time.sleep(4)
 
     # 상품 옵션 선택
-    webdriver.ActionChains(driver).send_keys(Keys.ENTER).perform()
-    time.sleep(4) 
+    # webdriver.ActionChains(driver).send_keys(Keys.ENTER).perform()
+    # time.sleep(4) 
 
     # 주문방법 선택 > 리모컨 주문
     webdriver.ActionChains(driver).send_keys(Keys.ARROW_RIGHT).perform()
@@ -107,7 +122,8 @@ def order_main():
     svcSeq = '51'
     url = 'http://123.111.139.135:8180/main_ani.jsp?svcSeq=' + svcSeq + '&graphicResolution=2#platformNameId=8&clientType=1&deviceType=1&videoResolution=2&deviceId=LC_PC_TEST&soId=LC_PC&model=NONE&mac=LC_PC_MAC&bridged=false'
     
-    driver = webdriver.Chrome()
+    # driver = webdriver.Chrome()
+    driver = get_chrome_driver()
     driver.get(url)
     driver.maximize_window()
 
