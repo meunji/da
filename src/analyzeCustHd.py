@@ -12,11 +12,14 @@ import io
 
 @st.cache_data
 def get_data():
-    df_ord = pd.read_csv('./file/bfmt_ord.csv', encoding='cp949', low_memory=False)
-    df_cust = pd.read_parquet('./file/ord_cust.parquet')
-    df_bfmt = pd.read_csv('./file/broad_info.csv', encoding='utf-8', low_memory=False)
-
-    return df_ord, df_cust, df_bfmt
+    try:
+        df_ord = pd.read_csv('./file/bfmt_ord.csv', encoding='cp949', low_memory=False)
+        df_cust = pd.read_parquet('./file/ord_cust.parquet', engine="pyarrow")
+        df_bfmt = pd.read_csv('./file/broad_info.csv', encoding='utf-8', low_memory=False)
+        return df_ord, df_cust, df_bfmt
+    except Exception as e:
+        st.error(f"데이터 로딩 실패: {e}")
+        return None, None, None
 
 def get_age_group(age):
     if pd.isnull(age):
