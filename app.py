@@ -6,17 +6,12 @@ import os
 # import 경로 지정
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
-try:
-    from automaticOrder import order_main
-    from crawlBroadcast import crawl_main
-    from analyzeBroadcast import analyze_broad_info
-    from analyzeOrderHd import analyze_order_main
-    from analyzeCustHd import load_data, cluster_cust
-    from predictOrderCustHd import predict_order_cust
-except Exception as e:
-    st.error(f"모듈 import 중 에러 발생 : {e}")
-
-st.set_page_config(page_title="데이터방송 업무 자동화 및 데이터 분석", layout="wide")
+from automaticOrder import order_main
+from crawlBroadcast import crawl_main
+from analyzeBroadcast import analyze_broad_info
+from analyzeOrderHd import analyze_order_main
+from analyzeCustHd import load_data, cluster_cust
+from predictOrderCustHd import predict_order_cust
 
 
 # session_state key 상수로 정의
@@ -189,7 +184,7 @@ def render_tab4():
 
 
 def main():
-    # st.set_page_config(layout="wide")
+    st.set_page_config(layout="wide")
     st.title("데이터방송 업무 자동화 및 데이터 분석")
 
     init_session_state()
@@ -213,7 +208,5 @@ def main():
         render_tab4()
 
 
-# if __name__ == "__main__":
-#     main()
-
-main()
+if __name__ == "__main__":
+    main()
