@@ -12,9 +12,9 @@ import io
 
 @st.cache_data
 def get_data():
-    df_ord = pd.read_csv('./file/bfmt_ord.csv', encoding='cp949')
+    df_ord = pd.read_csv('./file/bfmt_ord.csv', encoding='cp949', low_memory=False)
     df_cust = pd.read_parquet('./file/ord_cust.parquet')
-    df_bfmt = pd.read_csv('./file/broad_info.csv', encoding='utf-8')
+    df_bfmt = pd.read_csv('./file/broad_info.csv', encoding='utf-8', low_memory=False)
 
     return df_ord, df_cust, df_bfmt
 
