@@ -13,9 +13,15 @@ import io
 @st.cache_data
 def get_data():
     try:
-        df_ord = pd.read_parquet('./file/bfmt_ord.parquet', engine="pyarrow")
-        df_cust = pd.read_parquet('./file/ord_cust.parquet', engine="pyarrow")
+        # streamlit 배포시 메모리 줄이기 위해 필요한 컬럼만 
+        col_ord = ['BROD_DT', 'BFMT_NO', 'BROD_STRT_DTM', 'BROD_END_DTM', 'SLITM_CD', 'SELL_MDA_NO', 'SELL_MDA_NM'
+                   ,'SELL_UPRC', 'LAST_STLM_AMT', 'PAY_WAY_GBNM']
+        col_cust = ['CUST_NO','SEX_GBCD', 'SEX_GBNM', 'BYMD_DT', 'UPNT_CUST_YN']
+
+        df_ord = pd.read_parquet('./file/bfmt_ord.parquet', columns=col_ord, engine="pyarrow")
+        df_cust = pd.read_parquet('./file/ord_cust.parquet', columns=col_cust, engine="pyarrow")
         df_bfmt = pd.read_csv('./file/broad_info.csv', encoding='utf-8', low_memory=False)
+
         return df_ord, df_cust, df_bfmt
     except Exception as e:
         st.error(f"데이터 로딩 실패: {e}")
@@ -50,26 +56,23 @@ def preprocess_data(df_ord, df_cust, today):
     df_cust['CUST_NO'] = df_cust['CUST_NO'].astype(str)
     
     # 정수형
-    df_ord['INSM_MTHS'] = pd.to_numeric(df_ord['INSM_MTHS'], errors='coerce').astype('Int64')
+    # df_ord['INSM_MTHS'] = pd.to_numeric(df_ord['INSM_MTHS'], errors='coerce').astype('Int64')
     
     # 카테고리형
-    df_ord['ITEM_GBCD'] = df_ord['ITEM_GBCD'].astype('category')
-    df_ord['ITEM_GBNM'] = df_ord['ITEM_GBNM'].astype('category')
-    df_ord['INTG_ITEM_GBCD'] = df_ord['INTG_ITEM_GBCD'].astype('category')
-    df_ord['INTG_ITEM_GBNM'] = df_ord['INTG_ITEM_GBNM'].astype('category')
-    df_ord['LAST_ORD_STAT_GBCD'] = df_ord['LAST_ORD_STAT_GBCD'].astype('category')
-    df_ord['LAST_ORD_STAT_GBNM'] = df_ord['LAST_ORD_STAT_GBNM'].astype('category')
-    df_ord['ITEM_MDA_GBCD'] = df_ord['ITEM_MDA_GBCD'].astype('category')
-    df_ord['ITEM_MDA_GBNM'] = df_ord['ITEM_MDA_GBNM'].astype('category')
+    # df_ord['ITEM_GBCD'] = df_ord['ITEM_GBCD'].astype('category')
+    # df_ord['ITEM_GBNM'] = df_ord['ITEM_GBNM'].astype('category')
+    # df_ord['INTG_ITEM_GBCD'] = df_ord['INTG_ITEM_GBCD'].astype('category')
+    # df_ord['INTG_ITEM_GBNM'] = df_ord['INTG_ITEM_GBNM'].astype('category')
+    # df_ord['LAST_ORD_STAT_GBCD'] = df_ord['LAST_ORD_STAT_GBCD'].astype('category')
+    # df_ord['LAST_ORD_STAT_GBNM'] = df_ord['LAST_ORD_STAT_GBNM'].astype('category')
+    # df_ord['ITEM_MDA_GBCD'] = df_ord['ITEM_MDA_GBCD'].astype('category')
+    # df_ord['ITEM_MDA_GBNM'] = df_ord['ITEM_MDA_GBNM'].astype('category')
     df_ord['ACPT_CH_GBCD'] = df_ord['ACPT_CH_GBCD'].astype('category')
     df_ord['ACPT_CH_GBNM'] = df_ord['ACPT_CH_GBNM'].astype('category')
-    df_ord['LAST_STLM_STAT_GBCD'] = df_ord['LAST_STLM_STAT_GBCD'].astype('category')
-    df_ord['LAST_STLM_STAT_GBNM'] = df_ord['LAST_STLM_STAT_GBNM'].astype('category')
+    # df_ord['LAST_STLM_STAT_GBCD'] = df_ord['LAST_STLM_STAT_GBCD'].astype('category')
+    # df_ord['LAST_STLM_STAT_GBNM'] = df_ord['LAST_STLM_STAT_GBNM'].astype('category')
     df_ord['PAY_WAY_GBCD'] = df_ord['PAY_WAY_GBCD'].astype('category')
     df_ord['PAY_WAY_GBNM'] = df_ord['PAY_WAY_GBNM'].astype('category')
-    df_ord['PAY_WAY_GBCD'] = df_ord['PAY_WAY_GBCD'].astype('category')
-    df_ord['PAY_WAY_GBCD'] = df_ord['PAY_WAY_GBCD'].astype('category')
-    df_ord['PAY_WAY_GBCD'] = df_ord['PAY_WAY_GBCD'].astype('category')
     
     # 날짜형
     df_ord['BROD_STRT_DTM'] = pd.to_datetime(df_ord['BROD_STRT_DTM'], errors='coerce')
