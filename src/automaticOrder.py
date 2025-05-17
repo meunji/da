@@ -23,10 +23,10 @@ def get_chrome_driver():
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--window-size=1920x1080")
 
-    chrome_options.binary_location = "/usr/bin/chromium"
+    chrome_options.binary_location = "/tmp/chrome-linux64/chrome"
 
     return webdriver.Chrome(
-        service=Service("/usr/bin/chromedriver"),
+        service=Service("/tmp/chromedriver-linux64/chromedriver"),
         options=chrome_options
     )
 
