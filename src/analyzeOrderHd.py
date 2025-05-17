@@ -159,7 +159,8 @@ def analyze_order_daily(df, selected_date):
 
 # 주문 추이 분석
 def analyze_order_main():
-    raw = pd.read_csv('./file/bfmt_ord.csv', encoding='cp949')
+    # raw = pd.read_csv('./file/bfmt_ord.csv', encoding='cp949')
+    raw = pd.read_parquet('./file/bfmt_ord.parquet', engine="pyarrow")
 
     df_raw = preprocess_data(raw)
     analyze_order_trend(df_raw)
