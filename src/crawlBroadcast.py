@@ -38,7 +38,7 @@ def crawl_broadcast_info():
     today = datetime.today()
 
     url = 'https://live.ecomm-data.com/schedule/hs'
-    # browser = webdriver.Chrome()
+    # browser = webdriver.Chrome() 
     browser = get_chrome_driver()
     browser.get(url)
     
