@@ -7,7 +7,25 @@ import streamlit as st
 def load_data():
     df = pd.read_csv('./file/broad_info.csv', encoding='utf-8', parse_dates=['date'])
 
-    df['day_week'] = df['date'].dt.day_name(locale='ko_KR')  # 요일 추가
+    # df['day_week'] = df['date'].dt.day_name(locale='ko_KR')  # 요일 추가
+    
+    # 리눅스 로케일 설정 안되어 있는 경우 맵핑
+    df['day_week_en'] = df['date'].dt.day_name()
+
+    # 영어 -> 한국어 매핑 딕셔너리
+    en_to_ko = {
+        'Monday': '월요일',
+        'Tuesday': '화요일',
+        'Wednesday': '수요일',
+        'Thursday': '목요일',
+        'Friday': '금요일',
+        'Saturday': '토요일',
+        'Sunday': '일요일',
+    }
+
+    df['day_week'] = df['day_week_en'].map(en_to_ko)
+
+
     df['time_slot'] = pd.to_datetime(df['time'], format='%H:%M').dt.hour
 
     # 데이터방송 company
