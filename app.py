@@ -3,9 +3,6 @@ import pandas as pd
 import sys
 import os 
 
-import subprocess
-import stat
-
 # import 경로 지정
 sys.path.append(os.path.join(os.path.dirname(__file__), "src"))
 
@@ -185,21 +182,6 @@ def render_tab4():
 
             # st.session_state[TAB4_SELECTED_MENU] = "완료"
 
-
-# 필요한 바이너리 설치
-def install_chrome_and_driver():
-    if not os.path.exists("/tmp/chrome-linux64"):
-        subprocess.run("wget https://storage.googleapis.com/chrome-for-testing-public/114.0.5735.90/linux64/chrome-linux64.zip -O /tmp/chrome-linux64.zip", shell=True)
-        subprocess.run("unzip /tmp/chrome-linux64.zip -d /tmp/", shell=True)
-
-    if not os.path.exists("/tmp/chromedriver-linux64"):
-        subprocess.run("wget https://storage.googleapis.com/chrome-for-testing-public/114.0.5735.90/linux64/chromedriver-linux64.zip -O /tmp/chromedriver-linux64.zip", shell=True)
-        subprocess.run("unzip /tmp/chromedriver-linux64.zip -d /tmp/", shell=True)
-
-    # 실행 권한 부여
-    os.chmod("/tmp/chrome-linux64/chrome", stat.S_IRWXU)
-    os.chmod("/tmp/chromedriver-linux64/chromedriver", stat.S_IRWXU)
-
 def main():
     st.set_page_config(layout="wide")
     st.title("데이터방송 업무 자동화 및 데이터 분석")
@@ -223,9 +205,6 @@ def main():
         render_tab3()
     with tab4:
         render_tab4()
-
-    install_chrome_and_driver()
-
 
 if __name__ == "__main__":
     main()
