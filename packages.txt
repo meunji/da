@@ -1,5 +1,5 @@
 chromium
-chromium-chromedriver
+chromium-driver
 wget
 unzip
 ca-certificates
