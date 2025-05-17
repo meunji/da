@@ -14,8 +14,9 @@ import io
 def get_data():
     try:
         # streamlit 배포시 메모리 줄이기 위해 필요한 컬럼만 
-        col_ord = ['BROD_DT', 'BFMT_NO', 'BROD_STRT_DTM', 'BROD_END_DTM', 'SLITM_CD', 'SELL_MDA_NO', 'SELL_MDA_NM'
-                   ,'SELL_UPRC', 'LAST_STLM_AMT', 'PAY_WAY_GBNM']
+        col_ord = ['BROD_DT', 'BFMT_NO', 'BROD_STRT_DTM', 'BROD_END_DTM', 'SLITM_CD', 'SLITM_NM'
+                   , 'ORD_NO', 'CUST_NO', 'PTC_ORD_DTM', 'SELL_MDA_NO', 'SELL_MDA_NM', 'ACPT_CH_GBCD', 'ACPT_CH_GBNM'
+                   ,'SELL_UPRC', 'LAST_STLM_AMT', 'PAY_WAY_GBCD', 'PAY_WAY_GBNM']
         col_cust = ['CUST_NO','SEX_GBCD', 'SEX_GBNM', 'BYMD_DT', 'UPNT_CUST_YN']
 
         df_ord = pd.read_parquet('./file/bfmt_ord.parquet', columns=col_ord, engine="pyarrow")
@@ -78,7 +79,7 @@ def preprocess_data(df_ord, df_cust, today):
     df_ord['BROD_STRT_DTM'] = pd.to_datetime(df_ord['BROD_STRT_DTM'], errors='coerce')
     df_ord['BROD_END_DTM'] = pd.to_datetime(df_ord['BROD_END_DTM'], errors='coerce')
     df_ord['PTC_ORD_DTM'] = pd.to_datetime(df_ord['PTC_ORD_DTM'], errors='coerce')
-    df_ord['ORD_STAT_PROC_DTM'] = pd.to_datetime(df_ord['ORD_STAT_PROC_DTM'], errors='coerce')
+    # df_ord['ORD_STAT_PROC_DTM'] = pd.to_datetime(df_ord['ORD_STAT_PROC_DTM'], errors='coerce')
 
     df_cust['BYMD_DT'] = pd.to_datetime(df_cust['BYMD_DT'], errors='coerce')
 
