@@ -13,7 +13,7 @@ import io
 @st.cache_data
 def get_data():
     try:
-        df_ord = pd.read_csv('./file/bfmt_ord.csv', encoding='cp949', low_memory=False)
+        df_ord = pd.read_parquet('./file/bfmt_ord.parquet', engine="pyarrow")
         df_cust = pd.read_parquet('./file/ord_cust.parquet', engine="pyarrow")
         df_bfmt = pd.read_csv('./file/broad_info.csv', encoding='utf-8', low_memory=False)
         return df_ord, df_cust, df_bfmt
