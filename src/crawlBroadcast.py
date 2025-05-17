@@ -20,7 +20,7 @@ def get_chrome_driver():
     chrome_options.binary_location = "/usr/bin/chromium"
 
     return webdriver.Chrome(
-        service=Service("/usr/lib/chromium-browser/chromedriver"),
+        service=Service("/usr/bin/chromedriver"),
         options=chrome_options
     )
 
