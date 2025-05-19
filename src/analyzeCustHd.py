@@ -131,7 +131,8 @@ def create_cust_cluster(df_ord, df_cust, today):
     cluster_summary = cust_features.groupby('cluster')[feature_cols].mean()
 
     # 폰트 설정
-    plt.rcParams['font.family'] = 'Malgun Gothic'
+    # plt.rcParams['font.family'] = 'Malgun Gothic' #윈도우
+    plt.rcParams['font.family'] = 'Noto Sans CJK KR' #리눅스
 
     # 차트 그리기
     # 1. 클러스터 크기 확인
