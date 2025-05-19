@@ -314,7 +314,9 @@ def load_data():
 
 def cluster_cust(df_ord, df_cust):
     today = pd.Timestamp.today().normalize()
-    df_cluster = create_cust_cluster(df_ord, df_cust, today)
+    
+    with st.spinner("고객 클러스터 생성중..."):
+        df_cluster = create_cust_cluster(df_ord, df_cust, today)
 
     if "selected_cluster" not in st.session_state:
         st.session_state.selected_cluster = 0

@@ -156,7 +156,10 @@ def get_company_data(df):
 
 
 def analyze_broad_info():
-    df = load_data()
+
+    with st.spinner("데이터 로딩중..."):
+        df = load_data()
+
     get_all_data(df)
     get_company_data(df)
 
