@@ -1,21 +1,22 @@
-import pandas as pd
-import numpy as np
+import io
 from datetime import datetime
+
+import numpy as np
+import pandas as pd
 import streamlit as st
 
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
-
-import seaborn as sns
 import matplotlib.pyplot as plt
+import seaborn as sns
 import plotly.express as px
-import io
 
-from sklearn.model_selection import train_test_split
+from sklearn.cluster import KMeans
 from sklearn.ensemble import RandomForestClassifier
-from xgboost import XGBClassifier
-import lightgbm as lgb
 from sklearn.metrics import classification_report
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+import lightgbm as lgb
+from xgboost import XGBClassifier
 
 
 def predict(df_cluster, df_ord, df_cust):
@@ -113,6 +114,7 @@ def predict(df_cluster, df_ord, df_cust):
     results['PREDICT'] = y_pred
     cond = results['PREDICT'] == 1
 
+    results['CUST_NO'] = results['CUST_NO'].astype(str)
 
     col1, col2 = st.columns(2)
 

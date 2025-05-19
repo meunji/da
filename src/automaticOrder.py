@@ -1,13 +1,14 @@
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By 
-import time
 import os
-
-import streamlit as st
 import subprocess
+import time
+
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+import streamlit as st
+
 
 def get_version(cmd):
     try:
@@ -123,7 +124,6 @@ def cancel_order(driver):
 
     webdriver.ActionChains(driver).send_keys(Keys.ENTER).perform()
     time.sleep(4)
-
 
 
 

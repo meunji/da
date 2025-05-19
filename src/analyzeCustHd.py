@@ -3,13 +3,11 @@ from datetime import datetime
 
 import pandas as pd
 import streamlit as st
-
-from sklearn.preprocessing import StandardScaler
-from sklearn.cluster import KMeans
-
+import matplotlib.pyplot as plt
 import seaborn as sns
 import plotly.express as px
-import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
 
 
 @st.cache_data
@@ -314,7 +312,7 @@ def load_data():
 
 def cluster_cust(df_ord, df_cust):
     today = pd.Timestamp.today().normalize()
-    
+
     with st.spinner("고객 클러스터 생성중..."):
         df_cluster = create_cust_cluster(df_ord, df_cust, today)
 

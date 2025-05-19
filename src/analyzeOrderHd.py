@@ -1,11 +1,10 @@
-import pandas as pd
+import os
 from datetime import datetime
-import streamlit as st
 
+import pandas as pd
+import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-import os
-
 from streamlit_plotly_events import plotly_events
 
 
@@ -101,15 +100,7 @@ def analyze_order_trend(df):
     )
 
     if selected_points:
-        # try:
-        #     # 클릭한 날짜 문자열을 datetime.date 형식으로 변환
-        #     selected_date_str = selected_points[0]["x"]
-        #     selected_date = pd.to_datetime(selected_date_str).date()
-        #     st.session_state.selected_date = selected_date
-        #     st.success(f"선택된 날짜: {selected_date}")
-        # except Exception as e:
-        #     st.warning(f"날짜 파싱 중 오류 발생: {e}")
-        #     st.session_state.selected_date = None
+
         try:
             # 다양한 포맷에 대응하도록 robust하게 파싱
             selected_raw = selected_points[0]["x"]

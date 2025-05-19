@@ -1,13 +1,14 @@
-from selenium import webdriver
-from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.chrome.service import Service
-from selenium.webdriver.chrome.options import Options
-import time
-from datetime import datetime
-import pandas as pd
 import os
+import time
+from datetime import datetime, timedelta
+
+import pandas as pd
+from bs4 import BeautifulSoup
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.common.keys import Keys
+
 
 def get_chrome_driver():
     chrome_options = Options()
