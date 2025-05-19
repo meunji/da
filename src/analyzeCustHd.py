@@ -130,6 +130,9 @@ def create_cust_cluster(df_ord, df_cust, today):
 
     cluster_summary = cust_features.groupby('cluster')[feature_cols].mean()
 
+    # 폰트 설정
+    plt.rcParams['font.family'] = 'Malgun Gothic'
+
     # 차트 그리기
     # 1. 클러스터 크기 확인
     st.write("")
@@ -156,9 +159,6 @@ def create_cust_cluster(df_ord, df_cust, today):
     # 2. 클러스터 특성 확인
     st.write("")
     st.subheader("🧬 클러스터 특성 확인")
-
-    # 폰트 설정
-    plt.rcParams['font.family'] = 'Malgun Gothic'
 
     # 클러스터 요약 데이터를 사용한 히트맵
     cluster_mean = cluster_summary.transpose()
@@ -264,12 +264,10 @@ def analyze_cust_cluster(df_cluster, df_ord):
 
     # 주문 정보 필터링
     cond_ord = df_ord['CUST_NO'].isin(filtered_cluster['CUST_NO'])
-    filtered_orders = df_ord[cond_ord]
+    filtered_orders = df_ord[cond_ord].copy()
 
     st.subheader(f"🧾 클러스터 {selected_cluster} 의 고객 주문내역")
     st.dataframe(filtered_orders)
-
-
 
     filtered_orders['주문시간대'] = filtered_orders['PTC_ORD_DTM'].dt.hour
     hourly_order = filtered_orders.groupby('주문시간대')['ORD_NO'].count().reset_index()
