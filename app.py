@@ -13,10 +13,6 @@ from analyzeOrderHd import analyze_order_main
 from analyzeCustHd import load_data, cluster_cust
 from predictOrderCustHd import predict_order_cust
 
-# 폰트 캐시 재생성
-import matplotlib.font_manager as fm
-fm._rebuild()
-
 
 # session_state key 상수로 정의
 TAB1_SELECTED_MENU = "SELECTED_MENU_TAB1"
