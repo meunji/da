@@ -1,14 +1,16 @@
-import pandas as pd
+import io
 from datetime import datetime
+
+import pandas as pd
 import streamlit as st
 
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 
 import seaborn as sns
-import matplotlib.pyplot as plt
 import plotly.express as px
-import io
+import matplotlib.pyplot as plt
+
 
 @st.cache_data
 def get_data():
@@ -132,7 +134,7 @@ def create_cust_cluster(df_ord, df_cust, today):
 
     # 폰트 설정
     # plt.rcParams['font.family'] = 'Malgun Gothic' #윈도우
-    plt.rcParams['font.family'] = 'Noto Sans CJK KR' #리눅스
+    plt.rcParams['font.family'] = 'NanumGothic' #리눅스
 
     # 차트 그리기
     # 1. 클러스터 크기 확인

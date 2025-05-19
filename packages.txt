@@ -4,6 +4,7 @@ wget
 unzip
 ca-certificates
 fonts-liberation
+fonts-nanum
 fonts-noto-cjk
 libappindicator3-1
 libasound2
