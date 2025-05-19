@@ -92,6 +92,7 @@ def preprocess_data(df_ord, df_cust, today):
 
     return df_ord, df_cust
 
+@st.cache_data
 def create_cust_cluster(df_ord, df_cust, today):
     
     cust_summary = df_ord.groupby('CUST_NO').agg(
