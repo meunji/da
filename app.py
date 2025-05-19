@@ -50,7 +50,7 @@ def init_session_state():
     if CLUSTER_CUST_FLAG not in st.session_state:
         st.session_state[CLUSTER_CUST_FLAG] = False
     if ORDER_ANALYSIS_DATE not in st.session_state:
-            st.session_state[ORDER_ANALYSIS_DATE] = pd.to_datetime("2025-03-01").date()
+            st.session_state[ORDER_ANALYSIS_DATE] = None
 
 
 def render_tab1():

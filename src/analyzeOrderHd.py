@@ -101,10 +101,23 @@ def analyze_order_trend(df):
     )
 
     if selected_points:
+        # try:
+        #     # 클릭한 날짜 문자열을 datetime.date 형식으로 변환
+        #     selected_date_str = selected_points[0]["x"]
+        #     selected_date = pd.to_datetime(selected_date_str).date()
+        #     st.session_state.selected_date = selected_date
+        #     st.success(f"선택된 날짜: {selected_date}")
+        # except Exception as e:
+        #     st.warning(f"날짜 파싱 중 오류 발생: {e}")
+        #     st.session_state.selected_date = None
         try:
-            # 클릭한 날짜 문자열을 datetime.date 형식으로 변환
-            selected_date_str = selected_points[0]["x"]
-            selected_date = pd.to_datetime(selected_date_str).date()
+            # 다양한 포맷에 대응하도록 robust하게 파싱
+            selected_raw = selected_points[0]["x"]
+            if isinstance(selected_raw, dict) and "$date" in selected_raw:
+                selected_date = pd.to_datetime(selected_raw["$date"]).date()
+            else:
+                selected_date = pd.to_datetime(selected_raw).date()
+
             st.session_state.selected_date = selected_date
             st.success(f"선택된 날짜: {selected_date}")
         except Exception as e:
