@@ -70,9 +70,20 @@ def predict(df_cluster, df_ord, df_cust):
     #     scale_pos_weight=len(y_train[y_train == 0]) / len(y_train[y_train == 1])  # 클래스 불균형 조정
     # )
 
+    
     model = lgb.LGBMClassifier(
         class_weight='balanced',  # 클래스 불균형 자동 조정
-        random_state=42
+        random_state=42,
+
+        # 배포환경에서 속도개선, 메모리절약을 위한 파라미터 튜닝 
+        n_estimators=40,         # 트리 개수 줄여서 학습/예측 속도 향상
+        max_depth=4,             # 깊이 제한으로 모델 복잡도 & 메모리 절감
+        num_leaves=15,           # max_depth에 맞춰 적게 설정 (2^5-1=31 이하)
+        min_child_samples=30,    # 너무 작은 노드 생성을 줄여 트리 크기 축소
+        subsample=0.8,           # 약간 샘플링해 속도 향상, 메모리 절약
+        colsample_bytree=0.6,    # 피처 샘플링 비율 낮춰 계산량 감소
+        max_bin=63,              # 기본 255보다 낮춰 메모리 사용 줄임
+        n_jobs=-1                # CPU 코어 최대한 활용해 속도 향상
     )
 
 
