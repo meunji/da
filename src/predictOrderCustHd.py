@@ -64,16 +64,16 @@ def predict(df_cluster, df_ord, df_cust):
     X_train['CUST_NO'] = X_train['CUST_NO'].astype(np.int64)
     X_test['CUST_NO'] = X_test['CUST_NO'].astype(np.int64)
 
-    model = XGBClassifier(
-        use_label_encoder=False,  # 경고 방지용
-        eval_metric='logloss',    # 경고 방지용
-        scale_pos_weight=len(y_train[y_train == 0]) / len(y_train[y_train == 1])  # 클래스 불균형 조정
-    )
-
-    # model = lgb.LGBMClassifier(
-    #     class_weight='balanced',  # 클래스 불균형 자동 조정
-    #     random_state=42
+    # model = XGBClassifier(
+    #     use_label_encoder=False,  # 경고 방지용
+    #     eval_metric='logloss',    # 경고 방지용
+    #     scale_pos_weight=len(y_train[y_train == 0]) / len(y_train[y_train == 1])  # 클래스 불균형 조정
     # )
+
+    model = lgb.LGBMClassifier(
+        class_weight='balanced',  # 클래스 불균형 자동 조정
+        random_state=42
+    )
 
 
     model.fit(X_train, y_train)
