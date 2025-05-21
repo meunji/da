@@ -83,7 +83,8 @@ def predict(df_cluster, df_ord, df_cust):
         subsample=0.8,           # 약간 샘플링해 속도 향상, 메모리 절약
         colsample_bytree=0.6,    # 피처 샘플링 비율 낮춰 계산량 감소
         max_bin=63,              # 기본 255보다 낮춰 메모리 사용 줄임
-        n_jobs=-1                # CPU 코어 최대한 활용해 속도 향상
+        n_jobs=-1,               # CPU 코어 최대한 활용해 속도 향상
+        verbose=-1               # 학습로그 출력줄여서 오버헤드 감소
     )
 
 
