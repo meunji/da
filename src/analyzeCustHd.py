@@ -154,7 +154,7 @@ def create_cust_cluster(df_ord, df_cust, today):
     X_scaled = scaler.fit_transform(X_cluster)
 
     # KMeans 클러스터링
-    kmeans = KMeans(n_clusters=6, random_state=0, n_init='auto')
+    kmeans = KMeans(n_clusters=8, random_state=0, n_init='auto')
     cust_features['cluster'] = kmeans.fit_predict(X_scaled) 
 
     cluster_summary = cust_features.groupby('cluster')[feature_cols].mean()
@@ -276,7 +276,7 @@ def analyze_cust_cluster(df_cluster, df_ord):
     st.write("---")
     st.header("🛒 클러스터 고객 주문 내역 분석")
 
-    selected_cluster = st.selectbox("클러스터 선택", [0, 1, 2, 3, 4, 5], index=0)
+    selected_cluster = st.selectbox("클러스터 선택", [0, 1, 2, 3, 4, 5, 6, 7], index=0)
     st.session_state.selected_cluster = selected_cluster
     filtered_cluster = df_cluster[df_cluster["cluster"] == selected_cluster]
 
