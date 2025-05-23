@@ -2,6 +2,7 @@ import io
 from datetime import datetime
 
 import pandas as pd
+import numpy as np
 import streamlit as st
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -45,6 +46,14 @@ def get_age_group(age):
         return "60대"
     else:
         return "70대 이상"
+    
+def get_active_time(hour):
+    if 6 <= hour < 12:
+        return '아침형'
+    elif 12 <= hour < 24:
+        return '오후형'
+    else:
+        return '올빼미형'
 
 def preprocess_data(df_ord, df_cust, today):
     # 문자형
@@ -53,12 +62,12 @@ def preprocess_data(df_ord, df_cust, today):
     df_ord['SLITM_CD'] = df_ord['SLITM_CD'].astype(str)
     df_ord['ORD_NO'] = df_ord['ORD_NO'].astype(str)
     df_ord['CUST_NO'] = df_ord['CUST_NO'].astype(str)
-    
+
     df_cust['CUST_NO'] = df_cust['CUST_NO'].astype(str)
-    
+
     # 정수형
     # df_ord['INSM_MTHS'] = pd.to_numeric(df_ord['INSM_MTHS'], errors='coerce').astype('Int64')
-    
+
     # 카테고리형
     # df_ord['ITEM_GBCD'] = df_ord['ITEM_GBCD'].astype('category')
     # df_ord['ITEM_GBNM'] = df_ord['ITEM_GBNM'].astype('category')
@@ -74,7 +83,7 @@ def preprocess_data(df_ord, df_cust, today):
     # df_ord['LAST_STLM_STAT_GBNM'] = df_ord['LAST_STLM_STAT_GBNM'].astype('category')
     df_ord['PAY_WAY_GBCD'] = df_ord['PAY_WAY_GBCD'].astype('category')
     df_ord['PAY_WAY_GBNM'] = df_ord['PAY_WAY_GBNM'].astype('category')
-    
+
     # 날짜형
     df_ord['BROD_STRT_DTM'] = pd.to_datetime(df_ord['BROD_STRT_DTM'], errors='coerce')
     df_ord['BROD_END_DTM'] = pd.to_datetime(df_ord['BROD_END_DTM'], errors='coerce')
@@ -88,11 +97,15 @@ def preprocess_data(df_ord, df_cust, today):
     ) // 365)
     df_cust['AGE_GROUP'] = df_cust['AGE'].apply(get_age_group)
 
+    # 1. 주문 시간에서 시(hour) 추출
+    df_ord['ORD_HOUR'] = df_ord['PTC_ORD_DTM'].dt.hour
+    df_ord['ACTIVE_TIME'] = df_ord['ORD_HOUR'].apply(get_active_time)
+
     return df_ord, df_cust
 
 @st.cache_data
 def create_cust_cluster(df_ord, df_cust, today):
-    
+
     cust_summary = df_ord.groupby('CUST_NO').agg(
         total_orders = ('ORD_NO', 'nunique'),
         unique_products = ('SLITM_CD', 'nunique'),
@@ -104,19 +117,34 @@ def create_cust_cluster(df_ord, df_cust, today):
     monetary_df = df_ord.groupby('CUST_NO')['LAST_STLM_AMT'].sum().reset_index()
     monetary_df.rename(columns={'LAST_STLM_AMT': 'monetary'}, inplace=True)
 
+    # 파생 변수 생성
     cust_summary['recency'] = (today - cust_summary['last_order']).dt.days
     cust_summary['period'] = (cust_summary['last_order'] - cust_summary['first_order']).dt.days + 1
     cust_summary['frequency'] = cust_summary['total_orders'] / cust_summary['period']
 
+    # 고객별 ACTIVE_TIME 최빈값 (mode) 구하기
+    active_time_mode = df_ord.groupby('CUST_NO')['ACTIVE_TIME'] \
+        .agg(lambda x: x.mode().iloc[0] if not x.mode().empty else np.nan) \
+        .reset_index()
+
+    # cust_summary에 병합
+    cust_summary = cust_summary.merge(active_time_mode, on='CUST_NO', how='left')
+
+    # 병합
+    # cust_summary = cust_summary.merge(active_time_summary, on='CUST_NO', how='left')
     cust_summary = cust_summary.merge(monetary_df, on='CUST_NO', how='left')
-    
-    cust_features = cust_summary.merge(df_cust[['CUST_NO','SEX_GBNM','AGE','AGE_GROUP']], on='CUST_NO', how='left', validate='one_to_one')
+
+    # 고객 기본 정보 병합
+    cust_features = cust_summary.merge(
+        df_cust[['CUST_NO','SEX_GBNM','AGE','AGE_GROUP']],
+        on='CUST_NO', how='left', validate='one_to_one'
+    )
 
     # 범주형 -> 숫자형 변수로 변환
-    cust_features = pd.get_dummies(cust_features, columns=['SEX_GBNM','AGE_GROUP'], drop_first=True)
+    cust_features = pd.get_dummies(cust_features, columns=['SEX_GBNM', 'AGE_GROUP', 'ACTIVE_TIME'], drop_first=False)
 
     # 클러스터링에 사용할 컬럼만 선택 (원핫인코딩 컬럼도 추가)
-    feature_cols = ['total_orders','unique_products','recency','frequency','monetary'] + [col for col in cust_features.columns if col.startswith('SEX_GBNM_') or col.startswith('AGE_GROUP_')]
+    feature_cols = ['recency','frequency','monetary'] + [col for col in cust_features.columns if col.startswith('SEX_GBNM_') or col.startswith('AGE_GROUP_') or col.startswith('ACTIVE_TIME_')]
 
     # 결측값 처리 : AGE 결측치 0으로 채움
     X_cluster = cust_features[feature_cols].fillna(0)
@@ -126,14 +154,14 @@ def create_cust_cluster(df_ord, df_cust, today):
     X_scaled = scaler.fit_transform(X_cluster)
 
     # KMeans 클러스터링
-    kmeans = KMeans(n_clusters=5, random_state=0)
+    kmeans = KMeans(n_clusters=6, random_state=0, n_init='auto')
     cust_features['cluster'] = kmeans.fit_predict(X_scaled) 
 
     cluster_summary = cust_features.groupby('cluster')[feature_cols].mean()
 
     # 폰트 설정
-    # plt.rcParams['font.family'] = 'Malgun Gothic' #윈도우
-    plt.rcParams['font.family'] = 'NanumGothic' #리눅스
+    plt.rcParams['font.family'] = 'Malgun Gothic' #윈도우
+    # plt.rcParams['font.family'] = 'NanumGothic' #리눅스
 
     # 차트 그리기
     # 1. 클러스터 크기 확인
@@ -222,12 +250,12 @@ def create_cust_cluster(df_ord, df_cust, today):
     st.subheader("🔍 변수별 클러스터 차이 확인")
     fig3, axes = plt.subplots(nrows=2, ncols=7, figsize=(20, 8))
 
-    sns.barplot(data=cust_features, y='cluster', x='total_orders', orient='h', ax=axes[0, 0])
-    sns.barplot(data=cust_features, y='cluster', x='unique_products', orient='h', ax=axes[0, 1])
-    sns.barplot(data=cust_features, y='cluster', x='recency', orient='h', ax=axes[0, 2])
-    sns.barplot(data=cust_features, y='cluster', x='period', orient='h', ax=axes[0, 3])
-    sns.barplot(data=cust_features, y='cluster', x='frequency', orient='h', ax=axes[0, 4])
-    sns.barplot(data=cust_features, y='cluster', x='monetary', orient='h', ax=axes[0, 5])
+    sns.barplot(data=cust_features, y='cluster', x='recency', orient='h', ax=axes[0, 0])
+    sns.barplot(data=cust_features, y='cluster', x='frequency', orient='h', ax=axes[0, 1])
+    sns.barplot(data=cust_features, y='cluster', x='monetary', orient='h', ax=axes[0, 2])
+    sns.barplot(data=cust_features, y='cluster', x='ACTIVE_TIME_아침형', orient='h', ax=axes[0, 3])
+    sns.barplot(data=cust_features, y='cluster', x='ACTIVE_TIME_오후형', orient='h', ax=axes[0, 4])
+    sns.barplot(data=cust_features, y='cluster', x='ACTIVE_TIME_올빼미형', orient='h', ax=axes[0, 5])
     sns.barplot(data=cust_features, y='cluster', x='SEX_GBNM_여자', orient='h', ax=axes[0, 6])
     
     sns.barplot(data=cust_features, y='cluster', x='AGE_GROUP_20대', orient='h', ax=axes[1, 0])
@@ -248,7 +276,7 @@ def analyze_cust_cluster(df_cluster, df_ord):
     st.write("---")
     st.header("🛒 클러스터 고객 주문 내역 분석")
 
-    selected_cluster = st.selectbox("클러스터 선택", [0, 1, 2, 3, 4], index=0)
+    selected_cluster = st.selectbox("클러스터 선택", [0, 1, 2, 3, 4, 5], index=0)
     st.session_state.selected_cluster = selected_cluster
     filtered_cluster = df_cluster[df_cluster["cluster"] == selected_cluster]
 
